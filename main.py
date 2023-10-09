@@ -59,8 +59,9 @@ def add_identity_matrix(A):
     identity_matrix = np.eye(num_constraints)
     A_with_identity = np.hstack((A, identity_matrix))
     return A_with_identity
+
 def initialize_simplex():
-    global table, A, c, b,MIN
+    global table, A, c, b, MIN
 
     problem_type = input("Is this a minimization (min) or maximization (max) problem? ")
 
@@ -85,6 +86,11 @@ def initialize_simplex():
     c = np.array(c_list + [0] * num_constraints)
     b = np.array(b_list)
 
+    MIN = 1 if problem_type.lower() == "min" else 0
+
+    if(MIN == 1):
+      c = -1 * c
+
     # Add the identity matrix to A
     A = add_identity_matrix(A)
 
@@ -97,7 +103,7 @@ def initialize_simplex():
     # Change the type of the table to float
     table = np.array(table, dtype='float')
 
-    MIN = 1 if problem_type.lower() == "min" else 0
+    
 
 if __name__ == '__main__':
 
@@ -175,10 +181,10 @@ if __name__ == '__main__':
         # assign the new basic variable
         table[r][0] = k
         table[r][1] = c[k]
+        itr += 1
 
     print('\n\n')
-    itr += 1
-
+    
     print()
 
     print("***************************************************************")
