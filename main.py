@@ -1,6 +1,7 @@
 import numpy as np
 from fractions import Fraction  # so that numbers are not displayed in decimal.
 
+
 def print_table():
     for row in table:
         for el in row:
@@ -53,44 +54,58 @@ def perform_row_operations():
         if i != r:
             table[i, 2:len(table[0])] = table[i, 2:len(table[0])] - table[i][3 + k] * table[r, 2:len(table[0])]
 
+def add_identity_matrix(A):
+    num_constraints = len(A)
+    identity_matrix = np.eye(num_constraints)
+    A_with_identity = np.hstack((A, identity_matrix))
+    return A_with_identity
+def initialize_simplex():
+    global table, A, c, b,MIN
+
+    problem_type = input("Is this a minimization (min) or maximization (max) problem? ")
+
+    # Input the coefficients of the objective function as a list
+    c_list = list(map(int, input("Enter the coefficients of the objective function separated by spaces: ").split()))
+
+    # Input the number of constraints
+    num_constraints = int(input("Enter the number of constraints: "))
+
+    # Initialize the A matrix with zeros
+    A = np.zeros((num_constraints, len(c_list)))
+
+    # Input the constraint coefficients without slack variables
+    print(f"Enter the coefficients of the {num_constraints} constraints (without slack variables): ")
+    for i in range(num_constraints):
+        A[i] = list(map(int, input().split()))
+
+    # Input the resources as a list
+    b_list = list(map(int, input("Enter the resources separated by spaces: ").split()))
+
+    # Create NumPy arrays c and b
+    c = np.array(c_list + [0] * num_constraints)
+    b = np.array(b_list)
+
+    # Add the identity matrix to A
+    A = add_identity_matrix(A)
+
+    # Combine matrices B, cb, and xb to form the initial table
+    B = np.arange(num_constraints) + len(c_list)  # Basic variables
+    cb = np.array(c[-num_constraints:])  # Coefficients of basic variables in Z
+    xb = np.transpose([b])  # Resources
+    table = np.column_stack((B, cb, xb, A))
+
+    # Change the type of the table to float
+    table = np.array(table, dtype='float')
+
+    MIN = 1 if problem_type.lower() == "min" else 0
 
 if __name__ == '__main__':
 
     print("\n\t\t\t\t ****Simplex Algorithm ****\n\n")
 
-    # Input the number of constraints, decision variables, and whether it's a minimization or maximization problem
-    num_constraints = int(input("Enter the number of constraints: "))
-    num_variables = int(input("Enter the number of decision variables: "))
-    problem_type = input("Is this a minimization (min) or maximization (max) problem? ")
+    initialize_simplex()
 
-    # Initialize the A matrix (coefficients of constraints)
-    A = []
-    for i in range(num_constraints):
-        constraint_coefficients = list(map(float, input(f"Enter coefficients for constraint {i + 1} separated by spaces: ").split()))
-        A.append(constraint_coefficients)
-
-    A = np.array(A)
-
-    # Input the b matrix (amounts of resources)
-    b = list(map(float, input("Enter the amounts of resources separated by spaces: ").split()))
-    b = np.array(b)
-
-    # Input the c matrix (coefficients of the objective function)
-    c = list(map(float, input("Enter coefficients of the objective function separated by spaces: ").split()))
-    c = np.array(c)
-
-    # Initialize B (basic variables that make an identity matrix)
-    B = np.arange(num_constraints, num_constraints + num_variables)
-    cb = c[B]
-
-    xb = np.transpose([b])
-    table = np.hstack((B.reshape(-1, 1), cb.reshape(-1, 1), xb))
-    table = np.hstack((table, A))
-    table = np.array(table, dtype='float')
-
-    MIN = 1 if problem_type.lower() == "min" else 0
-
-    print("Simplex Working....\n")
+    print("Simplex Working....")
 
     # when optimality reached it will be made 1
     reached = 0
@@ -160,10 +175,9 @@ if __name__ == '__main__':
         # assign the new basic variable
         table[r][0] = k
         table[r][1] = c[k]
-        itr += 1
 
     print('\n\n')
-    
+    itr += 1
 
     print()
 
@@ -176,8 +190,11 @@ if __name__ == '__main__':
 
     print("optimal table:")
     print("B \tCB \tXB \ty1 \ty2 \ty3 \ty4")
-    print_table()
-
+    for row in table:
+        for el in row:
+            print(Fraction(str(el)).limit_denominator(100), end='\t')
+        print()
+    print()
     print("value of Z at optimality: ", end=" ")
 
     basis = []
