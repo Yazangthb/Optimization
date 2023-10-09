@@ -1,12 +1,12 @@
 import numpy as np
 from fractions import Fraction  # so that numbers are not displayed in decimal.
 
-
 def print_table():
     for row in table:
         for el in row:
             print(Fraction(str(el)).limit_denominator(100), end='\t')
         print()
+    print()
 
 
 def calculate_relative_profits():
@@ -55,46 +55,42 @@ def perform_row_operations():
 
 
 if __name__ == '__main__':
+
     print("\n\t\t\t\t ****Simplex Algorithm ****\n\n")
 
-    # inputs
+    # Input the number of constraints, decision variables, and whether it's a minimization or maximization problem
+    num_constraints = int(input("Enter the number of constraints: "))
+    num_variables = int(input("Enter the number of decision variables: "))
+    problem_type = input("Is this a minimization (min) or maximization (max) problem? ")
 
-    # A will contain the coefficients of the constraints
-    A = np.array([[18, 15, 12, 1, 0, 0], [6, 4, 8, 0, 1, 0], [5, 3, 3, 0, 0, 1]])
-    # b will contain the amount of resources
-    b = np.array([360, 192, 180])
-    # c will contain coefficients of objective function Z
-    c = np.array([9, 10, 16, 0, 0, 0])
+    # Initialize the A matrix (coefficients of constraints)
+    A = []
+    for i in range(num_constraints):
+        constraint_coefficients = list(map(float, input(f"Enter coefficients for constraint {i + 1} separated by spaces: ").split()))
+        A.append(constraint_coefficients)
 
-    # B will contain the basic variables that make identity matrix
-    cb = np.array(c[5])
-    B = np.array([[3], [4], [5]])
-    # cb contains their corresponding coefficients in Z
-    cb = np.vstack((cb, c[4]))
-    cb = np.vstack((cb, c[3]))
+    A = np.array(A)
+
+    # Input the b matrix (amounts of resources)
+    b = list(map(float, input("Enter the amounts of resources separated by spaces: ").split()))
+    b = np.array(b)
+
+    # Input the c matrix (coefficients of the objective function)
+    c = list(map(float, input("Enter coefficients of the objective function separated by spaces: ").split()))
+    c = np.array(c)
+
+    # Initialize B (basic variables that make an identity matrix)
+    B = np.arange(num_constraints, num_constraints + num_variables)
+    cb = c[B]
+
     xb = np.transpose([b])
-    # combine matrices B and cb
-    table = np.hstack((B, cb))
-    table = np.hstack((table, xb))
-    # combine matrices B, cb and xb
-    # finally combine matrix A to form the complete simplex table
+    table = np.hstack((B.reshape(-1, 1), cb.reshape(-1, 1), xb))
     table = np.hstack((table, A))
-    # change the type of table to float
     table = np.array(table, dtype='float')
-    # inputs end
 
-    # if min problem, make this var 1
-    MIN = 0
+    MIN = 1 if problem_type.lower() == "min" else 0
 
-    print("Table at itr = 0")
-    print("B \tCB \tXB \ty1 \ty2 \ty3 \ty4")
-    for row in table:
-        for el in row:
-            # limit the denominator under 100
-            print(Fraction(str(el)).limit_denominator(100), end='\t')
-        print()
-    print()
-    print("Simplex Working....")
+    print("Simplex Working....\n")
 
     # when optimality reached it will be made 1
     reached = 0
@@ -164,9 +160,10 @@ if __name__ == '__main__':
         # assign the new basic variable
         table[r][0] = k
         table[r][1] = c[k]
+        itr += 1
 
     print('\n\n')
-    itr += 1
+    
 
     print()
 
@@ -179,11 +176,8 @@ if __name__ == '__main__':
 
     print("optimal table:")
     print("B \tCB \tXB \ty1 \ty2 \ty3 \ty4")
-    for row in table:
-        for el in row:
-            print(Fraction(str(el)).limit_denominator(100), end='\t')
-        print()
-    print()
+    print_table()
+
     print("value of Z at optimality: ", end=" ")
 
     basis = []
@@ -201,6 +195,12 @@ if __name__ == '__main__':
         print(Fraction(str(sum)).limit_denominator(100))
     print("Final Basis: ", end=" ")
     print(basis)
+
+    print("Values of Final Basis:", end=" ")
+    print("[", end=" ")
+    for i in range(len(table)):
+        print(f'{Fraction(str(table[i][2])).limit_denominator(100)}', end=", ")
+    print("]")
 
     print("Simplex Finished...")
     print()
