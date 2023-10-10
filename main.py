@@ -1,13 +1,14 @@
 import numpy as np
+import sys # to stop the execution of code
 from fractions import Fraction  # so that numbers are not displayed in decimal.
 
 
-def print_table():
-    for row in table:
-        for el in row:
-            print(Fraction(str(el)).limit_denominator(100), end='\t')
-        print()
-    print()
+# def print_table():
+#     for row in table:
+#         for el in row:
+#             print(Fraction(str(el)).limit_denominator(100000), end='\t')
+#         print()
+#     print()
 
 
 def calculate_relative_profits():
@@ -30,7 +31,7 @@ def check_for_alternate_solution():
         if present == 0:
             if rel_prof[i] == 0:
                 alternate = 1
-                print("Case of Alternate found")
+                # print("Case of Alternate found")
 
 
 def perform_min_ratio_test():
@@ -88,7 +89,7 @@ def initialize_simplex():
 
     MIN = 1 if problem_type.lower() == "min" else 0
 
-    if(MIN == 1):
+    if MIN == 1:
       c = -1 * c
 
     # Add the identity matrix to A
@@ -102,16 +103,14 @@ def initialize_simplex():
 
     # Change the type of the table to float
     table = np.array(table, dtype='float')
+    return len(A[0])
 
-    
 
 if __name__ == '__main__':
 
-    print("\n\t\t\t\t ****Simplex Algorithm ****\n\n")
 
-    initialize_simplex()
+    A0_len = initialize_simplex()
 
-    print("Simplex Working....")
 
     # when optimality reached it will be made 1
     reached = 0
@@ -121,25 +120,25 @@ if __name__ == '__main__':
 
     while reached == 0:
 
-        print("Iteration: ", end=' ')
-        print(itr)
-        print("B \tCB \tXB \ty1 \ty2 \ty3 \ty4")
-        print_table()
+        # print("Iteration: ", end=' ')
+        # print(itr)
+        # print("B \tCB \tXB \ty1 \ty2 \ty3 \ty4")
+        # print_table()
 
         # calculate Relative profits-> cj - zj for non-basics
         i = 0
         rel_prof = calculate_relative_profits()
 
-        print("rel profit: ", end=" ")
-        for profit in rel_prof:
-            print(Fraction(str(profit)).limit_denominator(100), end=", ")
-        print()
+        # print("rel profit: ", end=" ")
+        # for profit in rel_prof:
+        #     print(Fraction(str(profit)).limit_denominator(100000), end=", ")
+        # print()
         i = 0
 
         # checking for alternate solution
         check_for_alternate_solution()
 
-        print()
+        # print()
         flag = 0
         for profit in rel_prof:
             if profit > 0:
@@ -147,7 +146,7 @@ if __name__ == '__main__':
                 break
         # if all relative profits <= 0
         if flag == 0:
-            print("All profits are <= 0, optimality reached")
+            # print("All profits are <= 0, optimality reached")
             reached = 1
             break
 
@@ -158,15 +157,14 @@ if __name__ == '__main__':
         # if no min ratio test was performed
         if r == -1:
             unbounded = 1
-            print("Case of Unbounded")
             break
 
-        print("pivot element index:", end=' ')
-        print(np.array([r, 3 + k]))
+        # print("pivot element index:", end=' ')
+        # print(np.array([r, 3 + k]))
 
         pivot = table[r][3 + k]
-        print("pivot element: ", end=" ")
-        print(Fraction(pivot).limit_denominator(100))
+        # print("pivot element: ", end=" ")
+        # print(Fraction(pivot).limit_denominator(100000))
 
         # perform row operations
         # divide the pivot row with the pivot element
@@ -183,47 +181,64 @@ if __name__ == '__main__':
         table[r][1] = c[k]
         itr += 1
 
-    print('\n\n')
-    
-    print()
+    # print('\n\n')
 
-    print("***************************************************************")
     if unbounded == 1:
         print("UNBOUNDED LPP")
-        exit()
-    if alternate == 1:
-        print("ALTERNATE Solution")
-
-    print("optimal table:")
-    print("B \tCB \tXB \ty1 \ty2 \ty3 \ty4")
-    for row in table:
-        for el in row:
-            print(Fraction(str(el)).limit_denominator(100), end='\t')
-        print()
-    print()
-    print("value of Z at optimality: ", end=" ")
-
-    basis = []
-    i = 0
-    sum = 0
-    while i < len(table):
-        sum += c[int(table[i][0])] * table[i][2]
-        temp = "x" + str(int(table[i][0]) + 1)
-        basis.append(temp)
-        i += 1
-    # if MIN problem make z negative
-    if MIN == 1:
-        print(-Fraction(str(sum)).limit_denominator(100))
     else:
-        print(Fraction(str(sum)).limit_denominator(100))
-    print("Final Basis: ", end=" ")
-    print(basis)
+        # print("***************************************************************")
+        if alternate == 1:
+            pass
+            # print("ALTERNATE Solution")
 
-    print("Values of Final Basis:", end=" ")
-    print("[", end=" ")
-    for i in range(len(table)):
-        print(f'{Fraction(str(table[i][2])).limit_denominator(100)}', end=", ")
-    print("]")
+        # print("optimal table:")
+        # print("B \tCB \tXB \ty1 \ty2 \ty3 \ty4")
+        # for row in table:
+        #     for el in row:
+        #         print(Fraction(str(el)).limit_denominator(100000), end='\t')
+        #     print()
+        # print()
 
-    print("Simplex Finished...")
-    print()
+        print("value of Z at optimality: ", end=" ")
+
+        basis = []
+        i = 0
+        sum = 0
+        used_num =[]
+        while i < len(table):
+            sum += c[int(table[i][0])] * table[i][2]
+            temp = "x" + str(int(table[i][0]) + 1)
+            used_num.append(int(table[i][0]) + 1)
+            basis.append(temp)
+            i += 1
+        i=1
+        while i<= A0_len:
+            if i in used_num:
+                pass
+            else:
+                tmp = "x" + str(i)
+                basis.append(tmp)
+            i+=1
+        # if MIN problem make z negative
+        if MIN == 1:
+            print(-Fraction(str(sum)).limit_denominator(100000))
+        else:
+            print(Fraction(str(sum)).limit_denominator(100000))
+        print("Final Basis: ", end=" ")
+        print(basis)
+
+        print("Values of Final Basis:", end=" ")
+        print("[", end=" ")
+        print_str=""
+        for i in range(A0_len):
+            if i < len(table) - 1:
+                print_str += str(Fraction(str(table[i][2])).limit_denominator(100000))
+                print_str += ", "
+            elif i == len(table)-1:
+                print_str += str(Fraction(str(table[i][2])).limit_denominator(100000))
+                print_str += ","
+            else:
+                print_str += " 0,"
+
+        print(print_str[:-1],end="")
+        print(" ]")
