@@ -1,4 +1,5 @@
 import numpy as np
+import sys # to stop the execution of code
 from fractions import Fraction  # so that numbers are not displayed in decimal.
 
 
@@ -61,7 +62,7 @@ def add_identity_matrix(A):
     return A_with_identity
 
 def initialize_simplex():
-    global table, A, c, b, MIN
+    global table, A, c, b, MIN, epsilon
 
     problem_type = input("Is this a minimization (min) or maximization (max) problem? ")
 
@@ -99,6 +100,9 @@ def initialize_simplex():
     cb = np.array(c[-num_constraints:])  # Coefficients of basic variables in Z
     xb = np.transpose([b])  # Resources
     table = np.column_stack((B, cb, xb, A))
+    
+    epsilon = float(input("Enter the epsilon (accuracy) value for rounding calculations: "))
+
 
     # Change the type of the table to float
     table = np.array(table, dtype='float')
@@ -183,12 +187,9 @@ if __name__ == '__main__':
     # print('\n\n')
 
     if unbounded == 1:
-        print("The method is not applicable!")
+        print("UNBOUNDED LPP")
     else:
         # print("***************************************************************")
-        if alternate == 1:
-            pass
-            # print("ALTERNATE Solution")
 
         # print("optimal table:")
         # print("B \tCB \tXB \ty1 \ty2 \ty3 \ty4")
@@ -220,9 +221,14 @@ if __name__ == '__main__':
             i+=1
         # if MIN problem make z negative
         if MIN == 1:
-            print(-Fraction(str(sum)).limit_denominator(100000))
+            rounded_sum = -sum
         else:
-            print(Fraction(str(sum)).limit_denominator(100000))
+            rounded_sum = sum
+
+        # Round the rounded_sum using epsilon as the number of decimal places
+        rounded_sum = round(rounded_sum, int(-np.log10(epsilon)))
+
+        print(rounded_sum)
         print("Final Basis: ", end=" ")
         print(basis)
 
