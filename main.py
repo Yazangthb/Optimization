@@ -1,5 +1,4 @@
 import numpy as np
-import sys # to stop the execution of code
 from fractions import Fraction  # so that numbers are not displayed in decimal.
 
 
@@ -184,7 +183,7 @@ if __name__ == '__main__':
     # print('\n\n')
 
     if unbounded == 1:
-        print("UNBOUNDED LPP")
+        print("The method is not applicable!")
     else:
         # print("***************************************************************")
         if alternate == 1:
