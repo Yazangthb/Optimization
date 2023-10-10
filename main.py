@@ -236,10 +236,10 @@ if __name__ == '__main__':
         print_str=""
         for i in range(A0_len):
             if i < len(table) - 1:
-                print_str += str(Fraction(str(table[i][2])).limit_denominator(100000))
+                print_str += str(round(table[i][2], int(-np.log10(epsilon))))
                 print_str += ", "
             elif i == len(table)-1:
-                print_str += str(Fraction(str(table[i][2])).limit_denominator(100000))
+                print_str += str(round(table[i][2], int(-np.log10(epsilon))))
                 print_str += ","
             else:
                 print_str += " 0,"
