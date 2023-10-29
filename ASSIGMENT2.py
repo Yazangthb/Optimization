@@ -98,11 +98,22 @@ def initialize_simplex():
 
     # Change the type of the table to float
     table = np.array(table, dtype='float')
-    return len(A[0])
+    return A,b_list,c,MIN
 
 
-A0_len = initialize_simplex()
+def check_intial_solution(x,b,A):
+    cntr=0
+    for row in A:
+        sum=0
+        for i in range(len(row)):
+            sum+=x[i]*row[i]
+        if sum != b[cntr]:
+            return False
+        cntr += 1
+    return True
 
+A,B,C,MIN = initialize_simplex()
+A0_len = len(A[0])
 # when optimality reached it will be made 1
 reached = 0
 itr = 1
@@ -204,45 +215,46 @@ else:
 
     print(print_str[:-1], end="")
     print(" ]")
+x_list = list(map(float, input("Enter the intial solution separated by spaces: ").split()))
 
-alpha = 0.1
-for i in range(2):
-    alpha += 0.4
-    x = np.array([1, 1, 1, 315, 174, 169], float)
-    c = np.array([9, 10, 16, 0, 0,0], float)
-    if MIN == 1:
-        c = -1 * c
-    b = np.array([9, 10, 16], float)
+if not(check_intial_solution(x_list,B,A)):
+    print("The problem does not have solution!")
+else:
+    alpha = 0.1
+    b = np.array(B, float)
+    for counter in range(2):
+        alpha += 0.4
+        x = np.array(x_list, float)
+        c = C
+        A_init = A
+        i = 1
 
+        while True:
+            v = x
+            D = np.diag(x)
+            AA = np.dot(A_init, D)
+            cc = np.dot(D, c)
+            I = np.eye(len(c))
+            F = np.dot(AA, np.transpose(AA))
+            FI = np.linalg.inv(F)
+            H = np.dot(np.transpose(AA), FI)
+            P = np.subtract(I, np.dot(H, AA))
+            cp = np.dot(P, cc)
+            nu = np.absolute(np.min(cp))
+            y = np.add(np.ones(len(c), float), (alpha / nu) * cp)
+            yy = np.dot(D, y)
 
-    A = np.array([[18, 15, 12, 1, 0, 0],
-                  [6, 4, 8, 0, 1, 0],
-                  [5, 3, 3, 0, 0, 1]], dtype=float)
-    i = 1
+            x = yy
 
-    while True:
-        v = x
-        D = np.diag(x)
+            # print("In iteration  ", i, " we have x = ", x, "\n")
+            i = i + 1
 
-        AA = np.dot(A, D)
-        cc = np.dot(D, c)
-        I = np.eye(len(c))
-        F = np.dot(AA, np.transpose(AA))
-        FI = np.linalg.inv(F)
-        H = np.dot(np.transpose(AA), FI)
-        P = np.subtract(I, np.dot(H, AA))
-        cp = np.dot(P, cc)
-        nu = np.absolute(np.min(cp))
-        y = np.add(np.ones(len(c), float), (alpha / nu) * cp)
-        yy = np.dot(D, y)
+            if norm(np.subtract(yy, v), ord=2) < 0.001:
+                break
 
-        x = yy
-
-        # print("In iteration  ", i, " we have x = ", x, "\n")
-        i = i + 1
-
-        if norm(np.subtract(yy, v), ord=2) < 0.0001:
-            break
-
-    print("In the last iteration  ", i,"alpha = ", alpha, "  we have x=  \n", x)
-    print("The value of the objective function z is: ", np.dot(x,c))
+        print("In the last iteration  ", i,"alpha = ", alpha, "  we have x=  \n", x)
+        if MIN == 1:
+            print("The value of the objective function z is: ", -1 * np.dot(x,c))
+        else:
+            print("The value of the objective function z is: ", np.dot(x,c))
+        print("")
