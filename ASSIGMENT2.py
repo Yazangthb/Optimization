@@ -1,6 +1,7 @@
 from numpy.linalg import norm
 import numpy as np
 from fractions import Fraction
+import sys
 # so that numbers are not displayed in decimal.
 
 
@@ -80,8 +81,11 @@ def initialize_simplex():
     c = np.array(c_list + [0] * num_constraints)
     b = np.array(b_list)
 
+
     if np.any(b < 0):
-      raise ValueError("resources values (b vector) should not have negative values")
+        print('')
+        print("Error: Resource values (b vector) should not have negative values")
+        sys.exit()
 
     MIN = 1 if problem_type.lower() == "min" else 0
 
