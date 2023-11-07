@@ -80,6 +80,9 @@ def initialize_simplex():
     c = np.array(c_list + [0] * num_constraints)
     b = np.array(b_list)
 
+    if np.any(b < 0):
+      raise ValueError("resources values (b vector) should not have negative values")
+
     MIN = 1 if problem_type.lower() == "min" else 0
 
     if MIN == 1:
