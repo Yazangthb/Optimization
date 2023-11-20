@@ -10,9 +10,9 @@ def display_parameter_table(supply_vector, cost_matrix, demand_vector):
     demand_vector: Numpy array representing the demand for each destination
     """
     # Print header
-    header = 'Sources/Destinations'
+    header = 'Sources/Dest.\t'
     for j in range(len(demand_vector)):
-        header += 'Destination ' + str(j + 1) + ' '
+        header += 'Dest.' + str(j + 1) + '\t'
     header += 'Supply'
     print(header)
 
@@ -21,18 +21,18 @@ def display_parameter_table(supply_vector, cost_matrix, demand_vector):
 
     # Print cost matrix and supply vector
     for i in range(len(supply_vector)):
-        source_line = 'Source ' + str(i + 1)
+        source_line = 'Source ' + str(i + 1) + '\t'
         for j in range(len(demand_vector)):
-            source_line += str(cost_matrix[i][j]) + ' '
+            source_line += str(cost_matrix[i][j]) + '\t'
         source_line += str(supply_vector[i])
         print(source_line)
 
     print("-" * 10)
 
     # Print demand vector
-    demand_line = "Demand" + " " * 15
+    demand_line = "Demand" + "\t\t"
     for j in range(len(demand_vector)):
-        demand_line += str(demand_vector[j]) + ' '
+        demand_line += str(demand_vector[j]) + '\t'
     print(demand_line + "\n")
 
 
