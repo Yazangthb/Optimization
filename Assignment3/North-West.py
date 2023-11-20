@@ -123,3 +123,9 @@ if __name__ == "__main__":
     if np.sum(supply_vector) != np.sum(demand_vector):
         print("The problem is not balanced!")
         exit(7)
+
+    allocation = northwest_corner_allocation(cost_matrix, supply_vector, demand_vector)
+
+    print("Initial Basic Feasible Solution:")
+    display_parameter_table(supply_vector, allocation, demand_vector)
+    display_allocation(allocation)
