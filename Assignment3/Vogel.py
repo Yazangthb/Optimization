@@ -1,4 +1,7 @@
 import numpy as np
+import sys
+
+max_val = sys.float_info.max
 
 def display_parameter_table(supply_vector, cost_matrix, demand_vector):
     """
@@ -17,7 +20,7 @@ def display_parameter_table(supply_vector, cost_matrix, demand_vector):
     print(header)
 
     # Separator
-    print("-" * 10)
+    print("-" * 100)
 
     # Print cost matrix and supply vector
     for i in range(len(supply_vector)):
@@ -27,7 +30,7 @@ def display_parameter_table(supply_vector, cost_matrix, demand_vector):
         source_line += str(supply_vector[i])
         print(source_line)
 
-    print("-" * 10)
+    print("-" * 100)
 
     # Print demand vector
     demand_line = "Demand" + "\t\t"
@@ -75,12 +78,12 @@ def allocate_goods(cost_matrix, supply, demand, allocations, ans):
                 supply[ind] -= min_supply_demand
                 demand[ind2] -= min_supply_demand
                 if demand[ind2] == 0:
-                    cost_matrix[:, ind2] = np.inf
+                    cost_matrix[:, ind2] = max_val
                 else:
-                    cost_matrix[ind, :] = np.inf
+                    cost_matrix[ind, :] = max_val
         else:
             for ind in max_col_indices:
-                min_cost = np.inf
+                min_cost = max_val
                 for j in range(n):
                     min_cost = min(min_cost, cost_matrix[j, ind])
                 ind2 = np.argmin(cost_matrix[:, ind])
@@ -90,9 +93,9 @@ def allocate_goods(cost_matrix, supply, demand, allocations, ans):
                 supply[ind2] -= min_supply_demand
                 demand[ind] -= min_supply_demand
                 if demand[ind] == 0:
-                    cost_matrix[:, ind] = np.inf
+                    cost_matrix[:, ind] = max_val
                 else:
-                    cost_matrix[ind2, :] = np.inf
+                    cost_matrix[ind2, :] = max_val
     return allocations, ans
 
 
