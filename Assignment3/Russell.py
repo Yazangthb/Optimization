@@ -44,7 +44,7 @@ def russell_allocation(cost_matrix, supply_vector, demand_vector):
     demand_vector: Numpy array representing the demand for each destination
     
     Returns:
-    allocation_matrix: 2D numpy array representing the initial allocation matrix based on Northwest Corner method
+    allocation_matrix: 2D numpy array representing the initial allocation matrix based on Russell's approximation method
     """
     num_suppliers = len(supply_vector)
     num_consumers = len(demand_vector)
