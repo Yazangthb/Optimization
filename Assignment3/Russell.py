@@ -34,6 +34,8 @@ def display_parameter_table(supply_vector, cost_matrix, demand_vector):
     for j in range(len(demand_vector)):
         demand_line += str(demand_vector[j]) + '\t'
     print(demand_line + "\n")
+
+
 def russell_allocation(cost_matrix, supply_vector, demand_vector):
     """
     Perform Russell’s approximation method for initial allocation in the transportation problem.
@@ -52,39 +54,42 @@ def russell_allocation(cost_matrix, supply_vector, demand_vector):
     blocked_column=np.zeros(num_consumers)
     allocation_matrix = np.zeros((num_suppliers, num_consumers))
     while True:
-      u=np.zeros(num_suppliers)
-      v=np.zeros(num_consumers)
-      for i in range(num_suppliers):
-        for j in range(num_consumers):
-          if blocked_column[j]!=0 or blocked_row[i]!=0:
-            continue
-          v[j]=np.maximum(v[j],cost_matrix[i][j])
-          u[i]=np.maximum(u[i],cost_matrix[i][j])
-      if np.all(u==0) or np.all(v==0):
-        break
-      delta=np.zeros((num_suppliers, num_consumers))
-      for i in range(num_suppliers):
-        for j in range(num_consumers):
-          delta[i][j]=cost_matrix[i][j]-u[i]-v[j]
-      i,j=0,0
-      mi=100
-      for a in range(num_suppliers):
-        for b in range(num_consumers):
-          if delta[a][b]<mi or (delta[a][b]==mi and cost_matrix[a][b]<cost_matrix[i][j]):
-            mi=delta[a][b]
-            i=a
-            j=b
-      if demand_vector[j]<supply_vector[i]:
-        allocation_matrix[i][j]=demand_vector[j]
-        supply_vector[i]-=demand_vector[j]
-        demand_vector[j]=0
-        blocked_column[j]+=1
-      else:
-        allocation_matrix[i][j]=supply_vector[i]
-        demand_vector[j]-=supply_vector[i]
-        supply_vector[i]=0
-        blocked_row[i]+=1
+        u=np.zeros(num_suppliers)
+        v=np.zeros(num_consumers)
+        for i in range(num_suppliers):
+            for j in range(num_consumers):
+                if blocked_column[j]!=0 or blocked_row[i]!=0:
+                    continue
+                v[j]=np.maximum(v[j],cost_matrix[i][j])
+                u[i]=np.maximum(u[i],cost_matrix[i][j])
+        if np.all(u==0) or np.all(v==0):
+            break
+        delta=np.zeros((num_suppliers, num_consumers))
+        for i in range(num_suppliers):
+            for j in range(num_consumers):
+                delta[i][j]=cost_matrix[i][j]-u[i]-v[j]
+        i, j = 0, 0
+        mi = 100
+        for a in range(num_suppliers):
+            for b in range(num_consumers):
+                if delta[a][b]<mi or (delta[a][b]==mi and cost_matrix[a][b]<cost_matrix[i][j]):
+                    mi = delta[a][b]
+                    i = a
+                    j = b
+        if demand_vector[j]<supply_vector[i]:
+            allocation_matrix[i][j]=demand_vector[j]
+            supply_vector[i]-=demand_vector[j]
+            demand_vector[j]=0
+            blocked_column[j]+=1
+        else:
+            allocation_matrix[i][j]=supply_vector[i]
+            demand_vector[j]-=supply_vector[i]
+            supply_vector[i]=0
+            blocked_row[i]+=1
+            
     return allocation_matrix
+
+
 def display_allocation(allocation_matrix):
     """
     Display the allocation matrix.
@@ -143,6 +148,7 @@ if __name__ == "__main__":
     display_allocation(allocation)
     Z=0
     for i in range(len(supply_vector)):
-      for j in range(len(demand_vector)):
-        Z+=allocation[i][j]*cost_matrix[i][j]
+        for j in range(len(demand_vector)):
+            Z+=allocation[i][j]*cost_matrix[i][j]
+        
     print("Z = ",Z)
